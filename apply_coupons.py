@@ -10,11 +10,12 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 def chrome_options():
     options = ChromeOptions()
-    options.add_argument('--headless=new')
+    # options.add_argument('--headless=new')
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
 
@@ -70,7 +71,7 @@ def main():
     # find and click sign in button
     driver.find_element(By.XPATH, "//span[text()='Sign In / Register']").click()
     # wait for auth page to load
-    element = WebDriverWait(driver, 10).until(
+    element = WebDriverWait(driver, 30).until(
         EC.presence_of_element_located((By.ID, "signInName"))
     )
     # enter credentials and submit
@@ -90,8 +91,11 @@ def main():
     # get list of buttons and loop to click
     buttons = driver.find_elements(By.CLASS_NAME, "clip-button")
     for button in buttons:
-        button.click()
-        time.sleep(0.5)
+        if button.is_enabled():
+            driver.execute_script("arguments[0].scrollIntoView(true);", button)
+            time.sleep(0.25)
+            button.click()
+        
     
     time.sleep(10)
 
